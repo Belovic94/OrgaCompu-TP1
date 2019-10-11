@@ -26,25 +26,26 @@ new_orientation:
 	#creo stack frame
 	subu  sp, sp, 24
 
+	.cprestore 16
+
 	# salvando el callee
-	sw  gp, 12(sp)
-	sw	fp, 16(sp)
-	sw	ra, 20(sp)
+	sw	fp, 20(sp)
+	sw	ra, 24(sp)
 
 	move  fp, sp
 
 	####################### STACK FRAME ######################
 	
 	# 	+---------------+	
-	# 24	|		|	/
+	# 24	|	ra	|	/
 	# 	+---------------+
-	# 20	|   ra	|	\
+	# 20	|   fp	|	\
 	# 	+---------------+	
-	# 16	|   fp	|	/
+	# 16	|   gp	|	/
 	# 	+---------------+
-	# 12	|	gp	|	\
+	# 12	|	a3	|	\
 	# 	+---------------+	
-	# 08	|  pad	|	|
+	# 08	|  	a2	|	|
 	# 	+---------------+	
 	# 04	|	a1	|	|
 	# 	+---------------+	
@@ -93,9 +94,9 @@ go_right:
 new_orientation_end:
 	lw v0, 24(sp)
 	# restauro callee-saved regs
-	lw	gp, 12(sp)
-	lw	fp, 16(sp)
-	lw	ra, 20(sp)
+	lw	gp, 16(sp)
+	lw	fp, 20(sp)
+	lw	ra, 24(sp)
 	# destruyo stack frame
 	addu	sp, sp, 24
 	# vuelvo a funcion llamante
@@ -113,7 +114,7 @@ new_orientation_end:
 
 move_forward:
         #debugging info: descripcion del stack frame
-	.frame fp, 40, ra 
+	.frame fp, 24, ra 
 
 	#bloque para codigo pic
 	.set noreorder
@@ -121,12 +122,13 @@ move_forward:
 	.set reorder
 
 	#creo stack frame
-	subu	sp, sp, 40
+	subu	sp, sp, 24
+
+	.cprestore 16
 
 	# salvando el callee
-	sw  gp, 24(sp)
-	sw	fp, 28(sp)
-	sw	ra, 32(sp)
+	sw	fp, 20(sp)
+	sw	ra, 24(sp)
 
 	move  fp, sp
 
@@ -141,19 +143,19 @@ move_forward:
 	#	+---------------+	|
 	# 40	|		|	/
 	# 	+---------------+
-	# 36	|		|	\
+	# 36	|	a2	|	\
 	# 	+---------------+	|
-	# 32	|	ra	|	|
+	# 32	|	a1	|	|
 	# 	+---------------+	|	SRA
-	# 28	|	fp	|	|
+	# 28	|	a0	|	|
 	# 	+---------------+	|
-	# 24	|	gp	|	/
+	# 24	|	ra	|	/
 	# 	+---------------+
-	# 20	|    	|	\
+	# 20	|   fp	|	\
 	# 	+---------------+	|	LTA
-	# 16	|   	|	/
+	# 16	|   gp	|	/
 	# 	+---------------+
-	# 12	|		|	\
+	# 12	|	a3	|	\
 	# 	+---------------+	|
 	# 08	|	a2	|	|
 	# 	+---------------+	|	ABA CALLEE
@@ -163,12 +165,12 @@ move_forward:
 	# 	+---------------+
 
 	#guardar a0 a1 y a2 en el stack
-    sw a0, 40(fp) 
-	sw a1, 44(fp)
-	sw a2, 48(fp)
+    sw a0, 28(sp) 
+	sw a1, 32(sp)
+	sw a2, 36(sp)
 
     lw t0, 8(a0)   # ant->o
-	lw t1, 40(sp) # ant
+	lw t1, 28(sp) # ant
     
 	# switch
 	lw t4, ON
@@ -187,7 +189,7 @@ adjust_north:
 	
 	la a0, 4(t1)  # &ant->y
 	subu a1, t2, 1 # ant->y - 1
-	lw a2, 48(sp) # height. 
+	lw a2, 36(sp) # height. 
     
 	b adjust_asm
 adjust_south:
@@ -195,7 +197,7 @@ adjust_south:
 
 	la a0, 4(t1)  # &ant->y
 	addu a1, t2, 1 # ant->y - 1
-	lw a2, 48(sp) # height.  
+	lw a2, 36(sp) # height.  
 
 	b adjust_asm
 
@@ -204,7 +206,7 @@ adjust_east:
 
     la a0, 0(t1)  # &ant->x
 	addu a1, t2, 1 # ant->x + 1
-	lw a2, 44(sp) # width
+	lw a2, 32(sp) # width
 
   	b adjust_asm
 
@@ -213,7 +215,7 @@ adjust_west:
 
     la a0, 0(t1)  # &ant->x
 	subu a1, t2, 1 # ant->x + 1
-	lw a2, 44(sp) # width
+	lw a2, 32(sp) # width
     
 	b adjust_asm
 
@@ -229,13 +231,13 @@ adjust:
 
 end_label:
 	
-	lw v0, 40(sp) # Devuelvo ant
+	lw v0, 28(sp) # Devuelvo ant
 	# restauro callee-saved regs
-	lw	gp, 24(sp)
-	lw	fp, 28(sp)
-	lw	ra, 32(sp)
+	lw	gp, 16(sp)
+	lw	fp, 20(sp)
+	lw	ra, 24(sp)
 	# destruyo stack frame
-	addu  sp, sp, 40
+	addu  sp, sp, 24
 	# vuelvo a funcion llamante
 	jr	ra
 
