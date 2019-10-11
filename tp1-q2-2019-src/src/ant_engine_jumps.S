@@ -26,10 +26,8 @@ new_orientation:
 	#creo stack frame
 	subu  sp, sp, 24
 
-	#bloque para codigo pic
-	.cprestore 12
-
 	# salvando el callee
+	sw  gp, 12(sp)
 	sw	fp, 16(sp)
 	sw	ra, 20(sp)
 
@@ -125,10 +123,8 @@ move_forward:
 	#creo stack frame
 	subu	sp, sp, 40
 
-	#bloque para codigo pic
-	.cprestore 24
-
 	# salvando el callee
+	sw  gp, 24(sp)
 	sw	fp, 28(sp)
 	sw	ra, 32(sp)
 
