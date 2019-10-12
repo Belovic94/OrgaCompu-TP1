@@ -7,8 +7,8 @@ OS: .word 1
 OE: .word 2
 OW: .word 3
 rotation_rules :
-north: .word OW,OE
-south: .word OE,OW
+north: .word OW, OE
+south: .word OE, OW
 east: .word ON, OS
 west: .word OS, ON
 
@@ -49,9 +49,9 @@ new_orientation:
 	#	+---------------+	|
 	# 40	|		|	/
 	# 	+---------------+
-	# 36	|	a2	|	\
+	# 36	|		|	\
 	# 	+---------------+	|
-	# 32	|	a1	|	|
+	# 32	|		|	|
 	# 	+---------------+	|	ABA CALLER
 	# 28	|	a0	|	|
 	# 	+---------------+	|
@@ -70,10 +70,22 @@ new_orientation:
 	# 00	|	a0	|	/
 	# 	+---------------+
 
-	#guardar a0 a1 y a2 en el stack
-    sw a0, 28(sp) 
-	sw a1, 32(sp)
-	sw a2, 36(sp)
+    la t0, rotation_rules
+    # get rotation_rules position: (x + C*y) * 4
+    mul t1, a1, 2  
+    addu t1 , t1, a0  
+    mul t1, t1, 4
+
+    addu v0, t1, t0
+
+    # restauro callee-saved regs
+	lw	gp, 16(sp)
+	lw	fp, 20(sp)
+	lw	ra, 24(sp)
+	# destruyo stack frame
+	addu  sp, sp, 24
+	# vuelvo a funcion llamante
+	jr	ra
 
 
 .end new_orientation
