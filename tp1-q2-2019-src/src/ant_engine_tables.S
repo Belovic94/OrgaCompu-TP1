@@ -1,7 +1,16 @@
 #include <regdef.h>
 
+
 .data
-ime: .asciiz "TP1 2Q2019: Implement me!"
+ON: .word 0
+OS: .word 1
+OE: .word 2
+OW: .word 3
+rotation_rules :
+north: .word OW,OE
+south: .word OE,OW
+east: .word ON, OS
+west: .word OS, ON
 
 .text
 .align 2
@@ -78,9 +87,3 @@ move_forward:
     jal doPanic
 .end move_forward
 
-.data
-rotation_rules :
-north: .word x,y
-south: .word y,x
-east: .word a, b
-west: .word b, a
