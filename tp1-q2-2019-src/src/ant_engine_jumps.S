@@ -191,6 +191,7 @@ adjust_north:
 	lw a2, 36(sp) # height. 
     
 	b adjust
+
 adjust_south:
 	lw t2, 4(a0) # ant->y
 
