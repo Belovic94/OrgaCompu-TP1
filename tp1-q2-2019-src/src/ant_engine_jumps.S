@@ -86,13 +86,13 @@ decide_west:
 decide:
 	lw t4, RR
 	beq t1, t4, go_right
-	sw t3, 24(sp)
+	move v0, t3
 	b new_orientation_end
 go_right:
-	sw t2, 24(sp)
+	move v0, t2
 
 new_orientation_end:
-	lw v0, 24(sp)
+
 	# restauro callee-saved regs
 	lw	gp, 16(sp)
 	lw	fp, 20(sp)
@@ -170,8 +170,7 @@ move_forward:
 	sw a2, 36(sp)
 
     lw t0, 8(a0)   # ant->o
-	lw t1, 28(sp) # ant
-    
+
 	# switch
 	lw t4, ON
 	lw t5, OS
@@ -185,39 +184,39 @@ move_forward:
 
 adjust_north:
 	# Carga de argumentos para pasar a la función adjust
-	lw t2, 4(t1) # ant->y
+	lw t2, 4(a0) # ant->y
 	
-	la a0, 4(t1)  # &ant->y
+	la a0, 4(a0)  # &ant->y
 	subu a1, t2, 1 # ant->y - 1
 	lw a2, 36(sp) # height. 
     
-	b adjust_asm
+	b adjust
 adjust_south:
-	lw t2, 4(t1) # ant->y
+	lw t2, 4(a0) # ant->y
 
-	la a0, 4(t1)  # &ant->y
+	la a0, 4(a0)  # &ant->y
 	addu a1, t2, 1 # ant->y - 1
 	lw a2, 36(sp) # height.  
 
-	b adjust_asm
+	b adjust
 
 adjust_east:
-	lw t2, 0(t1)  # ant->x
+	lw t2, 0(a0)  # ant->x
 
-    la a0, 0(t1)  # &ant->x
+    la a0, 0(a0)  # &ant->x
 	addu a1, t2, 1 # ant->x + 1
 	lw a2, 32(sp) # width
 
-  	b adjust_asm
+  	b adjust
 
 adjust_west:
-	lw t2, 0(t1)  # ant->x
+	lw t2, 0(a0)  # ant->x
 
-    la a0, 0(t1)  # &ant->x
+    la a0, 0(a0)  # &ant->x
 	subu a1, t2, 1 # ant->x + 1
 	lw a2, 32(sp) # width
     
-	b adjust_asm
+	b adjust
 
 panic_label:
 	lw a0, panic_msg
